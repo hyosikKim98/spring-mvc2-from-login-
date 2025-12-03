@@ -1,25 +1,27 @@
-package hello.itemservice.web.form;
+package hello.itemservice.web.message;
 
 import hello.itemservice.domain.item.DeliveryCode;
-import hello.itemservice.domain.item.ItemType;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Controller;
-
 import hello.itemservice.domain.item.Item;
 import hello.itemservice.domain.item.ItemRepository;
+import hello.itemservice.domain.item.ItemType;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Controller
-@RequestMapping("/form/items")
+@RequestMapping("/message/items")
 @RequiredArgsConstructor
-public class FormItemController {
+public class MessageItemController {
 
     private final ItemRepository itemRepository;
 
@@ -50,20 +52,20 @@ public class FormItemController {
     public String items(Model model) {
         List<Item> items = itemRepository.findAll();
         model.addAttribute("items", items);
-        return "form/items";
+        return "message/items";
     }
 
     @GetMapping("/{itemId}")
     public String item(@PathVariable long itemId,Model model) {
         Item findItem = itemRepository.findById(itemId);
         model.addAttribute("item", findItem);
-        return "form/item";
+        return "message/item";
     }
 
     @GetMapping("/add")
     public String addForm(Model model) {
         model.addAttribute("item", new Item());
-        return "form/addForm";
+        return "message/addForm";
     }
 
     @PostMapping("/add")
@@ -75,28 +77,28 @@ public class FormItemController {
         Item savedItem = itemRepository.save(item);
         redirectAttributes.addAttribute("itemId", savedItem.getId());
         redirectAttributes.addAttribute("status", true);
-        return "redirect:/form/items/{itemId}";
+        return "redirect:/message/items/{itemId}";
     }
 
     @GetMapping("/{itemId}/edit")
     public String editForm(@PathVariable Long itemId, Model model) {
         Item item = itemRepository.findById(itemId);
         model.addAttribute("item", item);
-        return "form/editForm";
+        return "message/editForm";
     }
 
     @PostMapping("/{itemId}/edit")
     public String edit(@PathVariable Long itemId, @ModelAttribute Item item) {
         itemRepository.update(itemId, item);
-        return "redirect:/form/items/{itemId}";
+        return "redirect:/message/items/{itemId}";
     }
 
     /**
      * 테스트용 데이터 추가
      */
-//    @PostConstruct
-//    public void init() {
-//        itemRepository.save(new Item("testA", 10000, 10));
-//        itemRepository.save(new Item("testB", 20000, 20));
-//    }
+    @PostConstruct
+    public void init() {
+        itemRepository.save(new Item("testA", 10000, 10));
+        itemRepository.save(new Item("testB", 20000, 20));
+    }
 }
