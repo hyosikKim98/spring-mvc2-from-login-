@@ -1,4 +1,4 @@
-package hello.itemservice.domain.item.form;
+package hello.itemservice.web.item.form;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

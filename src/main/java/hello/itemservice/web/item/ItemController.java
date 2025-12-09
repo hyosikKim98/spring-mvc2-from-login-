@@ -1,13 +1,9 @@
-package hello.itemservice.web.validation;
+package hello.itemservice.web.item;
 
-import hello.itemservice.domain.item.DeliveryCode;
 import hello.itemservice.domain.item.Item;
 import hello.itemservice.domain.item.ItemRepository;
-import hello.itemservice.domain.item.ItemType;
-import hello.itemservice.domain.item.check.SaveCheck;
-import hello.itemservice.domain.item.check.UpdateCheck;
-import hello.itemservice.domain.item.form.ItemSaveForm;
-import hello.itemservice.domain.item.form.ItemUpdateForm;
+import hello.itemservice.web.item.form.ItemSaveForm;
+import hello.itemservice.web.item.form.ItemUpdateForm;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,16 +14,13 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @Controller
-@RequestMapping("/validation/v4/items")
+@RequestMapping("/items")
 @RequiredArgsConstructor
-public class ValidationControllerV4 {
+public class ItemController {
 
     private final ItemRepository itemRepository;
 
@@ -35,20 +28,20 @@ public class ValidationControllerV4 {
     public String items(Model model) {
         List<Item> items = itemRepository.findAll();
         model.addAttribute("items", items);
-        return "validation/v4/items";
+        return "items/items";
     }
 
     @GetMapping("/{itemId}")
     public String item(@PathVariable long itemId,Model model) {
         Item findItem = itemRepository.findById(itemId);
         model.addAttribute("item", findItem);
-        return "validation/v4/item";
+        return "items/item";
     }
 
     @GetMapping("/add")
     public String addForm(Model model) {
         model.addAttribute("item", new Item());
-        return "validation/v4/addForm";
+        return "items/addForm";
     }
 
     @PostMapping("/add")
@@ -65,7 +58,7 @@ public class ValidationControllerV4 {
         //검증 실패시 다시 입력 폼으로
         if(bindingResult.hasErrors()){
             log.info("errors={}", bindingResult);
-            return "validation/v4/addForm";
+            return "items/addForm";
         }
         Item item = new Item();
         item.setItemName(form.getItemName());
@@ -76,14 +69,14 @@ public class ValidationControllerV4 {
         redirectAttributes.addAttribute("itemId", savedItem.getId());
         redirectAttributes.addAttribute("status", true);
 
-        return "redirect:/validation/v4/items/{itemId}";
+        return "redirect:/items/{itemId}";
     }
 
     @GetMapping("/{itemId}/edit")
     public String editForm(@PathVariable Long itemId, Model model) {
         Item item = itemRepository.findById(itemId);
         model.addAttribute("item", item);
-        return "validation/v4/editForm";
+        return "items/editForm";
     }
 
     @PostMapping("/{itemId}/edit")
@@ -100,7 +93,7 @@ public class ValidationControllerV4 {
         //검증 실패시 다시 입력 폼으로
         if(bindingResult.hasErrors()){
             log.info("errors={}", bindingResult);
-            return "validation/v4/editForm";
+            return "items/editForm";
         }
         Item item = new Item();
         item.setItemName(form.getItemName());
@@ -108,15 +101,7 @@ public class ValidationControllerV4 {
         item.setQuantity(form.getQuantity());
 
         itemRepository.update(itemId, item);
-        return "redirect:/validation/v4/items/{itemId}";
+        return "redirect:/items/{itemId}";
     }
 
-    /**
-     * 테스트용 데이터 추가
-     */
-    @PostConstruct
-    public void init() {
-        itemRepository.save(new Item("testA", 10000, 10));
-        itemRepository.save(new Item("testB", 20000, 20));
-    }
 }
